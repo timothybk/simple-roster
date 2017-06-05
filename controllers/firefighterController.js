@@ -23,42 +23,46 @@ exports.index = function(req, res) {
 
 //Display list of ff
 exports.firefighter_list = function(req, res, next) {
-    
+
     FireFighter.find({}, 'name qualifications')
-    .populate('qualifications')
-    .exec(function (err, list_firefighter) {
-    	if (err) {return next(err);}
-    	res.render('firefighter_list', {title: 'FireFighter List', firefighter_list: list_firefighter});
-    });
+        .populate('qualifications')
+        .exec(function(err, list_firefighter) {
+            if (err) {
+                return next(err);
+            }
+            res.render('firefighter_list', { title: 'FireFighter List', firefighter_list: list_firefighter });
+        });
 };
 
 //Display detail page for a specific ff
 exports.firefighter_detail = function(req, res, next) {
-    
+
     async.parallel({
-    	firefighter: function(callback){
+            firefighter: function(callback) {
 
-    		FireFighter.findById(req.params.id)
-    		.populate('qualifications')
-    		.exec(callback);
-    	},
+                FireFighter.findById(req.params.id)
+                    .populate('qualifications')
+                    .exec(callback);
+            },
 
-    	countinstance: function(callback){
-    		CountInstance.find({'firefighter': req.params.id})
-    		.populate('firefighter')
-    		.sort('-date')
-    		.exec(callback);
-    	},
-    }, function (err, results) {
-    	if (err) {return next(err);}
-    	res.render('firefighter_detail', {title: 'FireFighter', firefighter: results.firefighter, countinstance_list: results.countinstance});
-    })
-    // FireFighter.findById(req.params.id)
-    // .populate('qualifications')
-    // .exec(function (err, firefighter) {
-    // 	if (err) {return next(err);}
-    // 	res.render('firefighter_detail', {title: 'FireFighter', firefighter: firefighter});
-    // });
+            countinstance: function(callback) {
+                CountInstance.find({ 'firefighter': req.params.id })
+                    .populate('firefighter')
+                    .sort('-date')
+                    .exec(callback);
+            },
+        }, function(err, results) {
+            if (err) {
+                return next(err);
+            }
+            res.render('firefighter_detail', { title: 'FireFighter', firefighter: results.firefighter, countinstance_list: results.countinstance });
+        })
+        // FireFighter.findById(req.params.id)
+        // .populate('qualifications')
+        // .exec(function (err, firefighter) {
+        //  if (err) {return next(err);}
+        //  res.render('firefighter_detail', {title: 'FireFighter', firefighter: firefighter});
+        // });
 };
 
 //Display ff create form on GET
@@ -68,7 +72,8 @@ exports.firefighter_create_get = function(req, res, next) {
     Qualification.find({}, 'name')
         .exec(function(err, qualifications) {
             if (err) {
-                return next(err); }
+                return next(err);
+            }
             //successful, so render
             res.render('firefighter_form', { title: 'Create FireFighter', qualification_list: qualifications });
         });
